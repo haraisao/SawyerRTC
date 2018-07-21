@@ -16,8 +16,8 @@ import OpenRTM_aist
 
 
 ##
-# @class StdManipulator
-# @brief Manipulator controller with JARA Standard Interfaces
+# @class DataFlowRTC_Base
+# @brief Base class for DataFlowComponent
 # 
 # 
 class DataFlowRTC_Base(OpenRTM_aist.DataFlowComponentBase):
@@ -105,6 +105,8 @@ class DataFlowRTC_Base(OpenRTM_aist.DataFlowComponentBase):
 
 #########################################
 #
+#  Funcrions
+#
 def init_params_spec(spec, param):
   for k1 in param.keys():
     for k2 in param[k1].keys():
@@ -113,6 +115,8 @@ def init_params_spec(spec, param):
       spec.insert(-1, e)
       spec.insert(-1, v)
 
+#
+#
 def init_params(param):
   res=[]
   for k1 in param.keys():
@@ -123,6 +127,8 @@ def init_params(param):
     res.append([k1, val])
   return res
 
+#
+#
 def init_dataport(name, dataport):
   dname=dataport[name]['data_type']
   typ=dataport[name]['direction']

@@ -23,8 +23,8 @@ from Sawyer_Middle_idl_impl import *
 from MySawyer import *
 
 # This module's spesification
-stdmanipulator_spec = ["implementation_id", "StdManipulator", 
-		 "type_name",         "StdManipulator", 
+sawyer_manipulator_spec = ["implementation_id", "SawyerRTC", 
+		 "type_name",         "SawyerRTC", 
 		 "description",       "Manipulator controller with JARA Standard Interfaces", 
 		 "version",           "1.0.0", 
 		 "vendor",            "AIST", 
@@ -72,11 +72,11 @@ rtc_params['gripper_reverse']={'__type__':'int', 'default':'1',
 
 
 ##
-# @class StdManipulator
+# @class SawyerRTC
 # @brief Manipulator controller with JARA Standard Interfaces
 # 
 # 
-class StdManipulator(DataFlowRTC_Base):
+class SawyerRTC(DataFlowRTC_Base):
 	##
 	# @brief constructor
 	# @param manager Maneger Object
@@ -154,18 +154,18 @@ class StdManipulator(DataFlowRTC_Base):
 #########################################
 #  Initializers
 #
-def StdManipulatorInit(manager):
-    init_params_spec(stdmanipulator_spec, rtc_params)
-    profile = OpenRTM_aist.Properties(defaults_str=stdmanipulator_spec)
+def SawyerRTCInit(manager):
+    init_params_spec(sawyer_manipulator_spec, rtc_params)
+    profile = OpenRTM_aist.Properties(defaults_str=sawyer_manipulator_spec)
     manager.registerFactory(profile,
-                            StdManipulator,
+                            SawyerRTC,
                             OpenRTM_aist.Delete)
 
 def MyModuleInit(manager):
-    StdManipulatorInit(manager)
+    SawyerRTCInit(manager)
 
     # Create a component
-    comp = manager.createComponent("StdManipulator")
+    comp = manager.createComponent("SawyerRTC")
 
 def main():
 	mgr = OpenRTM_aist.Manager.init(sys.argv)
