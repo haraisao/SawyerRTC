@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <seatml>
+   <general name="CtrlGui">
+    <adaptor name="current_pos" type="rtcin" datatype="TimedFloatSeq" />
+    <adaptor name="target" type="rtcout" datatype="TimedFloatSeq" />
+    <adaptor name="grip" type="rtcout" datatype="TimedOctet" />
+
+    <adaptor name="manipCommon" type="consumer" 
+      interface="JARA_ARM::ManipulatorCommonInterface_Common|JARA_ARM_ManipulatorCommonInterface_Common"
+      if_class="JARA_ARM.ManipulatorCommonInterface_Common"  />
+    <adaptor name="manipMiddle" type="consumer"
+      interface="JARA_ARM::ManipulatorCommonInterface_Middle|JARA_ARM_ManipulatorCommonInterface_Middle"
+      if_class="JARA_ARM.ManipulatorCommonInterface_Middle"  />
+
+    <adaptor name="sawyerMiddle" type="consumer"
+      interface="JARA_ARM::Sawyer_Middle|JARA_ARM_Sawyer_Middle"
+      if_class="JARA_ARM.Sawyer_Middle"  />
+
+  </general>
+
+  <state name="main_mode">
+
+    <label text="Simple Control Panel for Manipulator" colspan="5" bg_color="blue" />
+
+    <brk />
+    <label text="Input:" />
+    <input id="textIn" width="30" colspan="4">
+        <message sendto="str_out" input="main_mode:textIn" />
+    </input>
+
+    <brk />
+    <space />
+    <button label="MoveAbs">
+      <script>
+         print("Call Move")
+         seat.callService("manipMiddle", "movePTPJointAbs", eval(seat.getEntry("main_mode:textIn")))
+      </script>
+    </button>
+
+    <space />
+    <button label="MoveRel">
+      <script>
+         print("Call MoveRel")
+         seat.callService("manipMiddle", "movePTPJointRel", eval(seat.getEntry("main_mode:textIn")))
+      </script>
+    </button>
+    
+    
+    <brk />
+
+    <button label="Info">
+      <script>
+        retval=seat.callService("manipCommon", "getManipInfo")
+        seat.appendText("main_mode:textOut", "\n==="+str(retval)+"===")
+      </script>
+    </button>
+
+    <button label="SetHome">
+      <script>
+         seat.callService("manipMiddle", "setHome", eval(seat.getEntry("main_mode:textIn")))
+      </script>
+    </button>
+
+    <button label="GetHome">
+      <script>
+        retval = seat.callService("manipMiddle", "getHome")
+        seat.appendText("main_mode:textOut", "\n==="+str(retval)+"===")
+      </script>
+    </button>
+
+    <button label="GoHome">
+      <script>
+        retval = seat.callService("manipMiddle", "goHome")
+        seat.appendText("main_mode:textOut", "\n==="+str(retval)+"===")
+      </script>
+    </button>
+
+    <button label="getPos">
+      <script>
+        retid, pos = seat.callService("manipCommon", "getFeedbackPosJoint")
+        if retid.id == 0:	
+          seat.setEntry("main_mode:textIn", str(pos))
+          seat.appendText("main_mode:textOut", "\n===GetCurrentPosition===")
+        else:
+          seat.appendText("main_mode:textOut", "\n===ERR:"+retid.comment+"===")
+      </script>
+    </button>
+
+    <brk />
+
+    <button label="openGripper">
+      <script>
+        retval=seat.callService("manipMiddle", "openGripper")
+        seat.appendText("main_mode:textOut", "\n==="+str(retval)+"===")
+      </script>
+    </button>
+
+    <button label="closeGripper">
+      <script>
+        retval=seat.callService("manipMiddle", "closeGripper")
+        seat.appendText("main_mode:textOut", "\n==="+str(retval)+"===")
+      </script>
+    </button>
+
+    <button label="pause">
+      <script>
+        retval = seat.callService("manipMiddle", "pause")
+        seat.appendText("main_mode:textOut", "\n==="+str(retval)+"===")
+      </script>
+    </button>
+
+    <button label="resume">
+      <script>
+        retval = seat.callService("manipMiddle", "resume")
+        seat.appendText("main_mode:textOut", "\n==="+str(retval)+"===")
+      </script>
+    </button>
+
+    <button label="stop">
+      <script>
+        retval = seat.callService("manipMiddle", "stop")
+        seat.appendText("main_mode:textOut", "\n==="+str(retval)+"===")
+      </script>
+    </button>
+  
+    <brk />
+    <space />
+
+    <button label="sendTarget">
+      <script sendto="target">
+        instr = seat.getEntry("main_mode:textIn")
+        if instr.strip() :
+           rtc_result=eval("TimedFloatSeq(Time(0,0),["+instr+"])")
+      </script>
+    </button>
+
+    <space />
+
+    <button label=" Grip ">
+      <script sendto="grip">
+        instr = seat.getEntry("main_mode:textIn")
+        if instr.strip() :
+           rtc_result=int(instr.split(',')[0])
+      </script>
+    </button>
+
+  
+
+    <brk />
+
+    <label text="Coming Text:" />
+    <text id="textOut" width="50" height="5" colspan="4" >
+	    INIT String...
+    </text>
+    <brk />
+    <button label="Clear">
+      <script>
+        seat.clearText("main_mode:textOut")
+      </script>
+    </button>
+ 
+    <rule source="str_in">
+      <script>
+        seat.appendText("main_mode:textOut", rtc_in_data.data+"\n")
+      </script>
+    </rule>
+  </state>
+</seatml>

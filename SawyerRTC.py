@@ -94,6 +94,10 @@ class SawyerRTC(DataFlowRTC_Base):
 	#
 	def onInitialize(self):
 		DataFlowRTC_Base.onInitialize(self)
+
+		self.bindDataListener(self._jointsIn, self.setTarget)
+		self.bindDataListener(self._gripIn)
+
 		self._robot=None
 		
 		return RTC.RTC_OK
@@ -150,6 +154,19 @@ class SawyerRTC(DataFlowRTC_Base):
 	
 		return RTC.RTC_OK
 	
+        #
+        # Callback method from RtcDataListenr
+        # 
+	def onData(self, name, data):
+		print(name,data)
+
+		return RTC.RTC_OK
+
+	def setTarget(self, name, data):
+		print("setTarget",name,data)
+
+		return RTC.RTC_OK
+
 
 #########################################
 #  Initializers

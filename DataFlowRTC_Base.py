@@ -15,6 +15,31 @@ import RTC
 import OpenRTM_aist
 
 
+#########################################################################
+#
+# DataListener 
+#   This class connected with DataInPort
+#
+class RtcDataListener(OpenRTM_aist.ConnectorDataListenerT):
+    def __init__(self, name, typ, obj, func=None):
+        self._name = name
+        self._type = typ
+        self._obj = obj
+        self._func = func
+    
+    def __call__(self, info, cdrdata):
+        data = OpenRTM_aist.ConnectorDataListenerT.__call__(self,
+                        info, cdrdata, self._type)
+
+        if self._func :
+          self._func(self._name, data)
+
+        else:
+          self._obj.onData(self._name, data)
+
+    def _set_callback(self, func):
+        self._func = func
+
 ##
 # @class DataFlowRTC_Base
 # @brief Base class for DataFlowComponent
@@ -102,6 +127,28 @@ class DataFlowRTC_Base(OpenRTM_aist.DataFlowComponentBase):
     
     return RTC.RTC_OK
   
+  #
+  #
+  def onData(self, name, data):
+
+    return RTC.RTC_OK
+
+  #
+  #
+  def bindDataListener(self, port, func=None):
+    try:
+      if isinstance(port, OpenRTM_aist.InPort) :
+        print("bindListener")
+        port.addConnectorDataListener(
+          OpenRTM_aist.ConnectorDataListenerType.ON_BUFFER_WRITE,
+          RtcDataListener(port._name, port._value, self, func))
+        return True
+      else:
+        print("Invalid PortType")
+        return False
+    except:
+      traceback.print_exc()
+      return False
 
 #########################################
 #
