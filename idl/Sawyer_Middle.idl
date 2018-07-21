@@ -1,0 +1,20 @@
+/*
+  Manipulator Common Interface for SAwyer(Middle Level Commands)
+
+*/
+
+#ifndef SAWYER_MIDDLE_IDL
+#define SAWYER_MIDDLE_IDL
+
+#include "ManipulatorCommonInterface_DataTypes.idl"
+
+module JARA_ARM {
+
+  interface Sawyer_Middle {
+    RETURN_ID moveCertesianRel(in DoubleSeq pos, in DoubleSeq rot, in octet flag);
+
+  };
+};
+
+#endif // SAWYER_MIDDLE_IDL
+

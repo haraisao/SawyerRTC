@@ -1,0 +1,16 @@
+*.pyc
+*.swp
+dist/
+build/
+doc/
+contrib/
+test/
+*.log
+workspace/
+rtcmaneger.ref
+logback.xml
+*~
+.vscode/
+*_idl.py
+JARA_ARM
+JARA_ARM__POA
