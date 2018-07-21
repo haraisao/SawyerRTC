@@ -24,10 +24,10 @@ class Sawyer_Middle_i (JARA_ARM__POA.Sawyer_Middle):
     #
     # RETURN_ID moveCertesianRel(pos, rot, flag)
     #  pos; DoubleSeq, rot: DoubleSeq, flag: octet
-    def moveCertesianRel(self, pos, rot, flag):
+    def moveCartesianRel(self, pos, rot, flag):
         # Must return: result
         try:
-          res=self._robot.moveCertesianRel(pos, rot, flag)
+          res=self._robot.moveCartesianRel(pos, rot, flag)
           if res is None:
             code=JARA_ARM.NG
             msg='Not supported'

@@ -135,10 +135,10 @@ class DataFlowRTC_Base(OpenRTM_aist.DataFlowComponentBase):
 
   #
   #
-  def bindDataListener(self, port, func=None):
+  def bindDataListener(self, portname, func=None):
     try:
+      port = eval('self._'+portname+'In')
       if isinstance(port, OpenRTM_aist.InPort) :
-        print("bindListener")
         port.addConnectorDataListener(
           OpenRTM_aist.ConnectorDataListenerType.ON_BUFFER_WRITE,
           RtcDataListener(port._name, port._value, self, func))

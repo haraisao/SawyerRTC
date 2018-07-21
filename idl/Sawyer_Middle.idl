@@ -11,7 +11,7 @@
 module JARA_ARM {
 
   interface Sawyer_Middle {
-    RETURN_ID moveCertesianRel(in DoubleSeq pos, in DoubleSeq rot, in octet flag);
+    RETURN_ID moveCartesianRel(in DoubleSeq pos, in DoubleSeq rot, in octet flag);
 
   };
 };

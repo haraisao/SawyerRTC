@@ -133,6 +133,11 @@
            rtc_result=eval("TimedFloatSeq(Time(0,0),["+instr+"])")
       </script>
     </button>
+    <button label="moveRel">
+        args = eval(seat.getEntry("main_mode:textIn"))
+        retval = seat.callService("sawyerMiddle", "moveCartesianRel", args[0], args[1], args[2])
+        seat.appendText("main_mode:textOut", "\n==="+str(retval)+"===")
+    </button>
 
     <space />
 

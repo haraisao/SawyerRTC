@@ -238,6 +238,15 @@ class MySawyer(object):
     self._sub[name]=None
   #
   #
+  def get_joint_angles(self):
+    return self._limb.joint_ordered_angles()
+
+  def get_joint_velocities(self):
+    vel=self._limb.joint_velocities()
+    return map(lambda x: vel[x], self._joint_names)
+
+  #
+  #
   def enable(self):
     self._rs.enable()
   #
@@ -1071,6 +1080,11 @@ class MySawyer(object):
 
   def goHome(self):
     self._target=self._home_pos
+    return True
+  #
+  #
+  def moveCartesianRel(self, pos, rot, flag):
+    self.set_cart_target(pos[0], pos[1], pos[2], rot[0], rot[1], rot[2], flag)
     return True
 
 
