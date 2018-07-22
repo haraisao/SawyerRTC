@@ -42,7 +42,7 @@ rtc_dataports['joints']={'data_type':'RTC.TimedFloatSeq', 'direction':'in'}
 rtc_dataports['grip']={'data_type':'RTC.TimedOctet', 'direction':'in'}
 rtc_dataports['out_joints']={'data_type':'RTC.TimedFloatSeq', 'direction':'out'}
 rtc_dataports['out_velocity']={'data_type':'RTC.TimedFloatSeq', 'direction':'out'}
-rtc_dataports['out_torque']={'data_type':'RTC.TimedFloatSeq', 'direction':'out'}
+#rtc_dataports['out_torque']={'data_type':'RTC.TimedFloatSeq', 'direction':'out'}
 
 # Service Ports
 rtc_services={}
