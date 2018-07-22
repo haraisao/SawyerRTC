@@ -153,7 +153,7 @@ class SawyerRTC(DataFlowRTC_Base):
 
     self._robot.onExecute()
 
-    data=RTC.TimedFloatSeq(RTC.Time(0,0),[])
+    data=RTC.TimedFloatSeq(new_Time(),[])
 
     data.data=self._robot.get_joint_angles()
     self._out_jointsOut.write(data)

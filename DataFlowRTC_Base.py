@@ -238,4 +238,9 @@ def instantiateDataType(dtype):
         return desc[1](*arg)
     return None
 
+#
+#
+def new_Time():
+  tm=OpenRTM_aist.Time() 
+  return RTC.Time(tm.sec,tm.usec)
 #########################################
