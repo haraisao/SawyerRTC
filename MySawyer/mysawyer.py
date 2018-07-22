@@ -986,21 +986,24 @@ class MySawyer(object):
     pos=self._limb.ik_request(pose)
     self._target=self.joint_pos_d2l(pos)
 
-    return None
+    return True
 
   def movePTPCartesianRel(self, carPos, elbow, flag):
     ep=self.endpoint_pose()
     mx=np.array(carPos)
-    pos=mx[:,3]
+    p=mx[:,3]
     mx=np.vstack((mx, [0,0,0,1]))
-    qtn=tf.transformations.quaternion_from_matrix(mx)
-
-    dp=newPose(pos, qtn)
-    pose=addPose(ep, dp)
-    pos=self._limb.ik_request(pose)
+    el = tf.transformations.euler_from_matrix(mx)
+    #qtn=tf.transformations.quaternion_from_matrix(mx)
+    #
+    #dp=newPose(pos, qtn)
+    #pose=addPose(ep, dp)
+    #pos=self._limb.ik_request(pose)
+    #self._target=self.joint_pos_d2l(pos)
+    pos=self.calc_cart_move2joints(p[0],p[1],p[2],el[0],el[1],el[2], (flag==1))
     self._target=self.joint_pos_d2l(pos)
 
-    return None
+    return True
 
   def movePTPJointAbs(self, jointPoints):
     if len(jointPoints) >= 7:
