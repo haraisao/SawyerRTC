@@ -978,28 +978,22 @@ class MySawyer(object):
 
   def movePTPCartesianAbs(self, carPos, elbow, flag):
     mx=np.array(carPos)
-    pos=mx[:,3]
+    posm=map(lambda x: x/1000.0, mx[:,3])
     mx=np.vstack((mx, [0,0,0,1]))
     qtn=tf.transformations.quaternion_from_matrix(mx)
 
-    pose=newPose(pos, qtn)
-    pos=self._limb.ik_request(pose)
-    self._target=self.joint_pos_d2l(pos)
+    pose=newPose(posm, qtn)
+    angles=self._limb.ik_request(pose)
+    self._target=self.joint_pos_d2l(angles)
 
     return True
 
   def movePTPCartesianRel(self, carPos, elbow, flag):
     ep=self.endpoint_pose()
     mx=np.array(carPos)
-    p=mx[:,3]
+    p=map(lambda x: x/1000.0, mx[:,3])
     mx=np.vstack((mx, [0,0,0,1]))
     el = tf.transformations.euler_from_matrix(mx)
-    #qtn=tf.transformations.quaternion_from_matrix(mx)
-    #
-    #dp=newPose(pos, qtn)
-    #pose=addPose(ep, dp)
-    #pos=self._limb.ik_request(pose)
-    #self._target=self.joint_pos_d2l(pos)
     pos=self.calc_cart_move2joints(p[0],p[1],p[2],el[0],el[1],el[2], (flag==1))
     self._target=self.joint_pos_d2l(pos)
 
@@ -1087,7 +1081,8 @@ class MySawyer(object):
   #
   #
   def moveCartesianRel(self, pos, rot, flag):
-    self.set_cart_target(pos[0], pos[1], pos[2], rot[0], rot[1], rot[2], flag)
+    p=map(lambda x: x/1000.0, pos)
+    self.set_cart_target(p[0], p[1], p[2], rot[0], rot[1], rot[2], flag)
     return True
 
 
