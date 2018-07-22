@@ -14,6 +14,7 @@
 
 """
 from DataFlowRTC_Base import *
+import numpy as np
 
 # Import Service implementation class
 from ManipulatorCommonInterface_Common_idl_impl import *
@@ -167,14 +168,19 @@ class SawyerRTC(DataFlowRTC_Base):
         # Callback method from RtcDataListenr
         # 
   def onData(self, name, data):
+    print(name,data)
     if name == 'joints':
-      self._robot.set_target(data.data)
+      print(data.data)
+      joints=map(lambda x: np.deg2rad(x), data.data)
+      print(joints)
+      self._robot.set_target(joints)
 
-    if name == 'grip':
+    elif name == 'grip':
       if data.data == 0:
         self._robot.openGripper()
       elif data.data == 1:
         self._robot.closeGripper()
+
     return RTC.RTC_OK
 
 

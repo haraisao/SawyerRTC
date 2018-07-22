@@ -1082,7 +1082,8 @@ class MySawyer(object):
   #
   def moveCartesianRel(self, pos, rot, flag):
     p=map(lambda x: x/1000.0, pos)
-    self.set_cart_target(p[0], p[1], p[2], rot[0], rot[1], rot[2], flag)
+    r=map(lambda x: np.deg2ras(x), rot)
+    self.set_cart_target(p[0], p[1], p[2], r[0], r[1], r[2], flag)
     return True
 
 
