@@ -136,7 +136,6 @@
     <button label="moveRel">
       <script>
         args = eval(seat.getEntry("main_mode:textIn"))
-        print(args)
         retval = seat.callService("sawyerMiddle", "moveCartesianRel", args[0], args[1], args[2])
         seat.appendText("main_mode:textOut", "\n==="+str(retval)+"===")
       </script>
