@@ -1,0 +1,71 @@
+implementation_id: SawyerRTC
+type_name: SawyerRTC
+version: 1.0.0
+vendor : AIST
+category : Manipulator
+activity_type : STATIC
+max_instance : 1
+language : Python
+lang_type : SCRIPT
+description : Sawyer Controller with the Manipulator common interface
+service_modules : ManipulatorCommonInterface_Common_idl_impl, ManipulatorCommonInterface_Middle_idl_impl, Sawyer_Middle_idl_impl
+dataport : 
+  - name : joints
+    direction : in
+    data_type : RTC.TimedFloatSeq
+    description : 目標の関節角
+  - name : grip
+    direction : in
+    data_type : RTC.TimedOctet
+  - name : out_target
+    direction : out
+    data_type : RTC.TimedFloatSeq 
+    description : 現在の関節角
+  - name : out_velocity
+    direction : out
+    data_type : RTC.TimedOctet 
+    description : グリッパの開閉
+serviceport : 
+  - name : manipCommon
+    direction : provider
+    if_name : JARA_ARM_ManipulatorCommonInterface_Common 
+    if_type_name : JARA_ARM::ManipulatorCommonInterface_Common 
+    impl : ManipulatorCommonInterface_Common_i
+    description : マニピュレータ標準インターフェース（COMMON)
+  - name : manipMiddle
+    direction : provider
+    if_name : JARA_ARM_ManipulatorCommonInterface_Middle 
+    if_type_name : JARA_ARM::ManipulatorCommonInterface_Middle 
+    impl : ManipulatorCommonInterface_Middle_i
+    description : マニピュレータ標準インターフェース（Middle)
+  - name : sawyerMiddle
+    direction : provider
+    if_name : JARA_ARM_Sawyer_Middle 
+    if_type_name : JARA_ARM::Sawyer_Middle 
+    impl : Sawyer_Middle_i
+    description : Swyer用インターフェース（Middle)
+configuration :
+  - name : vmax
+    default : 0.3
+    __type__ : float
+    __widget__ : text
+    __constraints__ : 0< x <= 1.0
+    description : 各関節角の動作速度に対する比率
+  - name : vrate
+    default : 2.0
+    __type__ : float
+    __widget__ : text
+    __constraints__ : 0 < x
+    description : 動作速度制御用のパラメータ
+  - name : accuracy
+    default : 0.01
+    __type__ : float
+    __widget__ : text
+    __constraints__ : 0 < x
+    description : 目標位置に対する精度
+  - name : gripper_reverse
+    default : 1
+    __type__ : int
+    __widget__ : radio
+    __constraints__ : (0,1)
+    description : グリッパの動作の反転

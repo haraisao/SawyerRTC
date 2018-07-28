@@ -10,11 +10,24 @@ import sys
 import time
 sys.path.append(".")
 
+import yaml
+from collections import OrderedDict
+
 # Import RTM module
 import omniORB
 import RTC
 import OpenRTM_aist
 
+
+#
+# Global Variables
+_rtc_spec_dict_=None
+_rtc_spec_=None
+_rtc_class_=None
+_rtc_name_=None
+_rtc_dataports_=None
+_rtc_serviceports_=None
+_rtc_params_=None
 
 #########################################################################
 #
@@ -52,11 +65,25 @@ class DataFlowRTC_Base(OpenRTM_aist.DataFlowComponentBase):
   # @brief constructor
   # @param manager Maneger Object
   # 
-  def __init__(self, manager, rtc_dataports, rtc_services, rtc_params):
+  def __init__(self, manager, rtc_dataports=None, rtc_services=None, rtc_params=None):
     OpenRTM_aist.DataFlowComponentBase.__init__(self, manager)
-    self._dataports=rtc_dataports
-    self._services=rtc_services
-    self._params=rtc_params
+
+    if rtc_dataports is None:
+      self._dataports=_rtc_dataports_
+    else:
+      self._dataports=rtc_dataports
+
+    if rtc_services is None:
+      self._services=_rtc_serviceports_
+    else:
+      self._services=rtc_services
+
+    if rtc_params is None:
+      self._params=_rtc_params_
+    else:
+      self._params=rtc_params
+
+    self.globals=None
 
     #
     # set dataport
@@ -76,7 +103,7 @@ class DataFlowRTC_Base(OpenRTM_aist.DataFlowComponentBase):
     for k in self._services.keys():
       if self._services[k]['direction'] == 'provider':
         self.__dict__['_'+k+'Port'] = OpenRTM_aist.CorbaPort(k)
-        self.__dict__['_'+k+'_service'] = self._services[k]['impl']()
+        self.__dict__['_'+k+'_service'] = eval(self._services[k]['impl'],globals())()
       elif self._services[k]['direction'] == 'consumer':
         self.__dict__['_'+k+'Port'] = OpenRTM_aist.CorbaPort(k)
         self.__dict__['_'+k+'_service'] = OpenRTM_aist.CorbaConsumer(interfaceType=self._services[k]['if_type'])
@@ -171,7 +198,8 @@ def init_params(param):
     if param[k1]['__type__'] == 'string':
       val=param[k1]['default']
     else:
-      val=eval(param[k1]['default'])
+      #val=eval(param[k1]['default'])
+      val=param[k1]['default']
     res.append([k1, val])
   return res
 
@@ -243,4 +271,69 @@ def instantiateDataType(dtype):
 def new_Time():
   tm=OpenRTM_aist.Time() 
   return RTC.Time(tm.sec,tm.usec)
+
+#
+#
+#
+yaml.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, lambda loader, node: OrderedDict(loader.construct_pairs(node)))
+
+def load_rtc_data(fname='rtc.yaml'):
+  data=yaml.load(file(fname))
+  return data
+
 #########################################
+def mk_rtc_spec(spec_dict):
+  keys=["implementation_id", "type_name", "description", "version", "vendor", "category", "activity_type", "max_instance", "language", "lang_type" ]
+  
+  res=[]
+  for x in keys:
+    res.append(x)
+    res.append(str(spec_dict[x])) 
+  
+  param=spec_dict['configuration']
+  param_keys=['default', '__type__', '__widget__', '__constrains__']
+  for p in param:
+    name=p['name']
+    for x in param_keys:
+      if p.has_key(x):  
+         res.append('conf.'+x+'.'+name)
+         res.append(str(p[x]))
+  return res
+
+def mk_rtc_dict(spec_dict, key):
+  res=OrderedDict()
+  lst=spec_dict[key]
+  for x in lst:
+    d=dict()
+    for k in x.keys():
+      if k != 'name':
+        d[k] = x[k]
+    res[x['name']]=d
+  return  res
+
+def RtcModuleInit(manager):
+  profile = OpenRTM_aist.Properties(defaults_str=_rtc_spec_)
+  manager.registerFactory(profile, _rtc_class_, OpenRTM_aist.Delete)
+  comp = manager.createComponent(_rtc_name_)
+
+def rtc_init(name, klass, rtc_yaml='rtc.yaml'):
+  global _rtc_spec_dict_, _rtc_spec_, _rtc_class_, _rtc_name_, _rtc_dataports_, _rtc_serviceports_, _rtc_params_
+
+  _rtc_spec_dict_=load_rtc_data(fname=rtc_yaml)
+  _rtc_spec_=mk_rtc_spec(_rtc_spec_dict_)
+  _rtc_class_=klass
+  _rtc_name_=name
+  _rtc_dataports_=mk_rtc_dict(_rtc_spec_dict_,'dataport')
+  _rtc_serviceports_=mk_rtc_dict(_rtc_spec_dict_,'serviceport')
+  _rtc_params_=mk_rtc_dict(_rtc_spec_dict_,'configuration')
+
+  for m in _rtc_spec_dict_['service_modules'].split(','):
+    m=m.strip()
+    if m :
+      import_str="from "+m+" import *"
+      exec(import_str,globals())
+  mgr = OpenRTM_aist.Manager.init(sys.argv)
+  mgr.setModuleInitProc(RtcModuleInit)
+  mgr.activateManager()
+
+  return mgr

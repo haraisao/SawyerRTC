@@ -16,60 +16,7 @@
 from DataFlowRTC_Base import *
 import numpy as np
 
-# Import Service implementation class
-from ManipulatorCommonInterface_Common_idl_impl import *
-from ManipulatorCommonInterface_Middle_idl_impl import *
-from Sawyer_Middle_idl_impl import *
-
 from MySawyer import *
-
-# This module's spesification
-sawyer_manipulator_spec = ["implementation_id", "SawyerRTC", 
-     "type_name",         "SawyerRTC", 
-     "description",       "Manipulator controller with JARA Standard Interfaces", 
-     "version",           "1.0.0", 
-     "vendor",            "AIST", 
-     "category",          "Manipulator", 
-     "activity_type",     "STATIC", 
-     "max_instance",      "1", 
-     "language",          "Python", 
-     "lang_type",         "SCRIPT",
-     ""]
-
-############################
-#  Data Ports
-rtc_dataports={}
-rtc_dataports['joints']={'data_type':'RTC.TimedFloatSeq', 'direction':'in'}
-rtc_dataports['grip']={'data_type':'RTC.TimedOctet', 'direction':'in'}
-rtc_dataports['out_joints']={'data_type':'RTC.TimedFloatSeq', 'direction':'out'}
-rtc_dataports['out_velocity']={'data_type':'RTC.TimedFloatSeq', 'direction':'out'}
-#rtc_dataports['out_torque']={'data_type':'RTC.TimedFloatSeq', 'direction':'out'}
-
-# Service Ports
-rtc_services={}
-rtc_services['manipCommon']={'impl': ManipulatorCommonInterface_Common_i,
-        'direction':'provider',
-      'if_name': "JARA_ARM_ManipulatorCommonInterface_Common",
-      'if_type_name' :"JARA_ARM::ManipulatorCommonInterface_Common"}
-
-rtc_services['manipMiddle']={'impl': ManipulatorCommonInterface_Middle_i,
-       'direction':'provider',
-      'if_name': "JARA_ARM_ManipulatorCommonInterface_Middle",
-      'if_type_name' :"JARA_ARM::ManipulatorCommonInterface_Middle"}
-
-rtc_services['sawyerMiddle']={'impl': Sawyer_Middle_i,
-       'direction':'provider',
-      'if_name': "JARA_ARM_Sawyer_Middle",
-      'if_type_name' :"JARA_ARM::Sawyer_Middle"}
-
-#  Parameters
-rtc_params={}
-rtc_params['vmax']={'__type__':'float', 'default':'0.3', '__widget__':'text'}
-rtc_params['vrate']={'__type__':'float', 'default':'2.0', '__widget__':'text'}
-rtc_params['accuracy']={'__type__':'float', 'default':'0.01',
-       '__widget__': 'text'}
-rtc_params['gripper_reverse']={'__type__':'int', 'default':'1', 
-      '__widget__':'radio', '__constraints__':'(0,1)'}
 
 
 ##
@@ -83,7 +30,7 @@ class SawyerRTC(DataFlowRTC_Base):
   # @param manager Maneger Object
   # 
   def __init__(self, manager):
-    DataFlowRTC_Base.__init__(self, manager,rtc_dataports, rtc_services, rtc_params)
+    DataFlowRTC_Base.__init__(self, manager)
 
   ##
   #
@@ -188,23 +135,9 @@ class SawyerRTC(DataFlowRTC_Base):
 #########################################
 #  Initializers
 #
-def SawyerRTCInit(manager):
-  init_params_spec(sawyer_manipulator_spec, rtc_params)
-  profile = OpenRTM_aist.Properties(defaults_str=sawyer_manipulator_spec)
-  manager.registerFactory(profile,
-                            SawyerRTC,
-                            OpenRTM_aist.Delete)
-
-def MyModuleInit(manager):
-  SawyerRTCInit(manager)
-
-  # Create a component
-  comp = manager.createComponent("SawyerRTC")
 
 def main():
-  mgr = OpenRTM_aist.Manager.init(sys.argv)
-  mgr.setModuleInitProc(MyModuleInit)
-  mgr.activateManager()
+  mgr = rtc_init("SawyerRTC", SawyerRTC, 'rtc.yaml')
   mgr.runManager()
 
 if __name__ == "__main__":
