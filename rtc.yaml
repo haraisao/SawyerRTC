@@ -17,7 +17,7 @@ dataport :
   - name : grip
     direction : in
     data_type : RTC.TimedOctet
-  - name : out_target
+  - name : out_joints
     direction : out
     data_type : RTC.TimedFloatSeq 
     description : 現在の関節角
@@ -49,19 +49,16 @@ configuration :
     default : 0.3
     __type__ : float
     __widget__ : text
-    __constraints__ : 0< x <= 1.0
     description : 各関節角の動作速度に対する比率
   - name : vrate
     default : 2.0
     __type__ : float
     __widget__ : text
-    __constraints__ : 0 < x
     description : 動作速度制御用のパラメータ
   - name : accuracy
     default : 0.01
     __type__ : float
     __widget__ : text
-    __constraints__ : 0 < x
     description : 目標位置に対する精度
   - name : gripper_reverse
     default : 1

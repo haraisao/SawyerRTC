@@ -18,7 +18,7 @@ import omniORB
 from omniORB import CORBA, PortableServer
 import JARA_ARM, JARA_ARM__POA
 
-from MySawyer import *
+#from MySawyer import *
 
 #
 # ManipInfo:

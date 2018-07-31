@@ -83,8 +83,6 @@ class DataFlowRTC_Base(OpenRTM_aist.DataFlowComponentBase):
     else:
       self._params=rtc_params
 
-    self.globals=None
-
     #
     # set dataport
     for k in self._dataports.keys():
@@ -103,7 +101,7 @@ class DataFlowRTC_Base(OpenRTM_aist.DataFlowComponentBase):
     for k in self._services.keys():
       if self._services[k]['direction'] == 'provider':
         self.__dict__['_'+k+'Port'] = OpenRTM_aist.CorbaPort(k)
-        self.__dict__['_'+k+'_service'] = eval(self._services[k]['impl'],globals())()
+        self.__dict__['_'+k+'_service'] = eval(self._services[k]['impl'], globals())()
       elif self._services[k]['direction'] == 'consumer':
         self.__dict__['_'+k+'Port'] = OpenRTM_aist.CorbaPort(k)
         self.__dict__['_'+k+'_service'] = OpenRTM_aist.CorbaConsumer(interfaceType=self._services[k]['if_type'])
@@ -111,6 +109,7 @@ class DataFlowRTC_Base(OpenRTM_aist.DataFlowComponentBase):
     # initialize of configuration-data.
     for x in init_params(self._params):
       self.__dict__['_'+x[0]] = [x[1]]
+
     
   ##
   #
@@ -178,6 +177,22 @@ class DataFlowRTC_Base(OpenRTM_aist.DataFlowComponentBase):
       traceback.print_exc()
       return False
 
+  #
+  #
+  def _init_dataports(self):
+    for k in self._dataports.keys():
+      _d, _p = init_dataport(k, self._dataports)
+
+      if self._dataports[k]['direction'] == 'in':
+        self.__dict__['_d_'+k] = _d
+        self.__dict__['_'+k+'In'] = _p
+      elif self._dataports[k]['direction'] == 'out':
+        self.__dict__['_d_'+k] = _d
+        self.__dict__['_'+k+'Out'] = _p
+      else:
+        pass
+
+
 #########################################
 #
 #  Funcrions
@@ -195,11 +210,12 @@ def init_params_spec(spec, param):
 def init_params(param):
   res=[]
   for k1 in param.keys():
-    if param[k1]['__type__'] == 'string':
-      val=param[k1]['default']
-    else:
-      #val=eval(param[k1]['default'])
-      val=param[k1]['default']
+    val=param[k1]['default']
+    #if param[k1]['__type__'] == 'string':
+    #  val=param[k1]['default']
+    #else:
+    #  #val=eval(param[k1]['default'])
+    #  val=param[k1]['default']
     res.append([k1, val])
   return res
 

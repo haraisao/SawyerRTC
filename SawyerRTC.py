@@ -16,7 +16,8 @@
 from DataFlowRTC_Base import *
 import numpy as np
 
-from MySawyer import *
+#from MySawyer import *
+import MySawyer
 
 
 ##
@@ -59,7 +60,8 @@ class SawyerRTC(DataFlowRTC_Base):
   #
   #  
   def onActivated(self, ec_id):
-    self._robot=MySawyer(self.getInstanceName(), anonymous=False)
+    print (self.getInstanceName())
+    self._robot=MySawyer.MySawyer(self.getInstanceName(), anonymous=False)
     self._robot.activate()
     self._robot._is_running=True
     self._manipCommon_service._robot=self._robot
@@ -79,8 +81,9 @@ class SawyerRTC(DataFlowRTC_Base):
   #
   #
   def onDeactivated(self, ec_id):
-    self._robot._is_running=False
-    self._robot.disable()
+    if self._robot:
+      self._robot._is_running=False
+      self._robot.disable()
   
     return RTC.RTC_OK
 
@@ -95,19 +98,21 @@ class SawyerRTC(DataFlowRTC_Base):
   #
   #
   def onExecute(self, ec_id):
-    self._robot._vmax=self._vmax[0]
-    self._robot._vrate=self._vrate[0]
-    self._robot._gripper_reverse=(self._gripper_reverse[0] == 1)
+    if self._robot:
+       
+      self._robot._vmax=self._vmax[0]
+      self._robot._vrate=self._vrate[0]
+      self._robot._gripper_reverse=(self._gripper_reverse[0] == 1)
 
-    self._robot.onExecute()
+      self._robot.onExecute()
 
-    data=RTC.TimedFloatSeq(new_Time(),[])
+      data=RTC.TimedFloatSeq(new_Time(),[])
 
-    data.data=self._robot.get_joint_angles()
-    self._out_jointsOut.write(data)
+      data.data=self._robot.get_joint_angles()
+      self._out_jointsOut.write(data)
   
-    data.data=self._robot.get_joint_velocities()
-    self._out_velocityOut.write(data)
+      data.data=self._robot.get_joint_velocities()
+      self._out_velocityOut.write(data)
 
     return RTC.RTC_OK
   
@@ -115,11 +120,8 @@ class SawyerRTC(DataFlowRTC_Base):
         # Callback method from RtcDataListenr
         # 
   def onData(self, name, data):
-    print(name,data)
     if name == 'joints':
-      print(data.data)
       joints=map(lambda x: np.deg2rad(x), data.data)
-      print(joints)
       self._robot.set_target(joints)
 
     elif name == 'grip':
