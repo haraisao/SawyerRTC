@@ -139,7 +139,7 @@ class SawyerRTC(DataFlowRTC_Base):
 #
 
 def main():
-  mgr = rtc_init("SawyerRTC", SawyerRTC, 'rtc.yaml')
+  mgr = rtc_init(SawyerRTC, 'rtc.yaml')
   mgr.runManager()
 
 if __name__ == "__main__":

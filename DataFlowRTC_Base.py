@@ -197,25 +197,10 @@ class DataFlowRTC_Base(OpenRTM_aist.DataFlowComponentBase):
 #
 #  Funcrions
 #
-def init_params_spec(spec, param):
-  for k1 in param.keys():
-    for k2 in param[k1].keys():
-      e="conf." + k2 + "." + k1
-      v=param[k1][k2]
-      spec.insert(-1, e)
-      spec.insert(-1, v)
-
-#
-#
 def init_params(param):
   res=[]
   for k1 in param.keys():
     val=param[k1]['default']
-    #if param[k1]['__type__'] == 'string':
-    #  val=param[k1]['default']
-    #else:
-    #  #val=eval(param[k1]['default'])
-    #  val=param[k1]['default']
     res.append([k1, val])
   return res
 
@@ -293,11 +278,15 @@ def new_Time():
 #
 yaml.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, lambda loader, node: OrderedDict(loader.construct_pairs(node)))
 
+#
+#
 def load_rtc_data(fname='rtc.yaml'):
   data=yaml.load(file(fname))
   return data
 
 #########################################
+#
+#
 def mk_rtc_spec(spec_dict):
   keys=["implementation_id", "type_name", "description", "version", "vendor", "category", "activity_type", "max_instance", "language", "lang_type" ]
   
@@ -315,30 +304,39 @@ def mk_rtc_spec(spec_dict):
          res.append('conf.'+x+'.'+name)
          res.append(str(p[x]))
   return res
-
+#
+#
+#
 def mk_rtc_dict(spec_dict, key):
   res=OrderedDict()
-  lst=spec_dict[key]
-  for x in lst:
-    d=dict()
-    for k in x.keys():
-      if k != 'name':
-        d[k] = x[k]
-    res[x['name']]=d
-  return  res
+  try:
+    lst=spec_dict[key]
+    for x in lst:
+      d=dict()
+      for k in x.keys():
+        if k != 'name':
+          d[k] = x[k]
+      res[x['name']]=d
+    return  res
+  except:
+    return {}
 
+#
+#
 def RtcModuleInit(manager):
   profile = OpenRTM_aist.Properties(defaults_str=_rtc_spec_)
   manager.registerFactory(profile, _rtc_class_, OpenRTM_aist.Delete)
   comp = manager.createComponent(_rtc_name_)
 
-def rtc_init(name, klass, rtc_yaml='rtc.yaml'):
+#
+#
+def rtc_init(klass, rtc_yaml='rtc.yaml'):
   global _rtc_spec_dict_, _rtc_spec_, _rtc_class_, _rtc_name_, _rtc_dataports_, _rtc_serviceports_, _rtc_params_
 
   _rtc_spec_dict_=load_rtc_data(fname=rtc_yaml)
   _rtc_spec_=mk_rtc_spec(_rtc_spec_dict_)
   _rtc_class_=klass
-  _rtc_name_=name
+  _rtc_name_=_rtc_spec_dict_['implementation_id']
   _rtc_dataports_=mk_rtc_dict(_rtc_spec_dict_,'dataport')
   _rtc_serviceports_=mk_rtc_dict(_rtc_spec_dict_,'serviceport')
   _rtc_params_=mk_rtc_dict(_rtc_spec_dict_,'configuration')
