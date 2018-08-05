@@ -123,7 +123,7 @@ class DataFlowRTC_Base(OpenRTM_aist.DataFlowComponentBase):
 
     # Bind variables and configuration variable
     for k in self._params.keys():
-      self.bindParameter(k, self.__dict__['_'+k], self._params[k]['default'])
+      self.bindParameter(k, self.__dict__['_'+k], str(self._params[k]['default']))
                   
     # Set DataPort buffers
     for k in self._dataports.keys():
